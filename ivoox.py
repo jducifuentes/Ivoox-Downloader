@@ -116,12 +116,12 @@ if __name__ == '__main__':
     if not os.path.exists(download_path):
         os.makedirs(download_path)
 
-    print("Getting urls##########################################################")
+    print("\n\nGetting urls...")
     links = get_download_urls(url_r)
 
     #links = links[::-1]
-
-    print("Start Download#######################################################")
+    print("Start Download!\n")
+   
     for i, _url in enumerate(links):
         fichero2 = title[i]
         fichero2 = fichero2.replace('.',' ')
