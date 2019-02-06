@@ -3,6 +3,15 @@ import os
 
 import bs4
 import requests
+import unicodedata
+import string
+
+
+
+global valid_filename_chars
+valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+global char_limit
+char_limit = 255
 
 
 def new_bs(url):
@@ -11,11 +20,31 @@ def new_bs(url):
 
 def get_urls_page(soup: bs4.BeautifulSoup):
     ans = []
+    global title
+    cadena = "caden"
+    cadena2 = "caden2"
     rect = soup.find_all("p", "title-wrapper text-ellipsis-multiple")
+    #print ("*************************")
+    #print (rect)
     for r in rect:
         ans += [r.find('a').get('href')]
+        title += [r.find('a').get('title')]
     return ans
 
+def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
+    # replace spaces
+    #print ("*/*/*/*/*/*/*/*/*/*/*/*/*/*/")
+    #print (type(filename))
+    for r in replace:
+        filename = filename.replace(r,'_')    
+    # keep only valid ascii chars
+    cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
+    
+    # keep only whitelisted chars
+    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+    if len(cleaned_filename)>char_limit:
+        print("Warning, filename truncated because it was over {}. Filenames may no longer be unique".format(char_limit))
+    return cleaned_filename[:char_limit]
 
 def hasnext(soup: bs4.BeautifulSoup):
     new_url = None
@@ -66,8 +95,10 @@ def get_download_urls(root):
 def format_n(n):
     return ("000" + str(n))[-3:]
 
-
 if __name__ == '__main__':
+    title = []
+   
+
     # Lectura
     parser = argparse.ArgumentParser()
     parser.add_argument("url", type=str, help="url of audio")
@@ -87,15 +118,21 @@ if __name__ == '__main__':
     if not os.path.exists(download_path):
         os.makedirs(download_path)
 
-    print("Getting urls")
+    print("Getting urls##########################################################")
     links = get_download_urls(url_r)
 
-    if not rev:
+    if  rev:
         links = links[::-1]
 
-    print("Start Download")
+    print("Start Download#######################################################")
     for i, _url in enumerate(links):
-        local_filename = os.path.join(download_path, f"{name}_{format_n(i+1)}.mp3")
+        fichero2 = title[i]
+        fichero2 = fichero2.replace('.',' ')
+        fichero2 = fichero2.rstrip()
+        fichero = clean_filename(fichero2)
+        fichero = fichero.replace('_',' ')
+        
+        local_filename = os.path.join(download_path, f"{fichero}.mp3")
         print(_url)
         req = requests.get(_url, stream=True)
         with open(local_filename, 'wb') as f:
@@ -103,3 +140,5 @@ if __name__ == '__main__':
                 if chunk:
                     f.write(chunk)
         print(f"Download : {100*(i+1) / len(links):.2f}%")
+
+
