@@ -21,8 +21,6 @@ def new_bs(url):
 def get_urls_page(soup: bs4.BeautifulSoup):
     ans = []
     global title
-    cadena = "caden"
-    cadena2 = "caden2"
     rect = soup.find_all("p", "title-wrapper text-ellipsis-multiple")
     #print ("*************************")
     #print (rect)
@@ -102,18 +100,18 @@ if __name__ == '__main__':
     # Lectura
     parser = argparse.ArgumentParser()
     parser.add_argument("url", type=str, help="url of audio")
-    parser.add_argument("name", type=str, help="name of audio")
+    parser.add_argument("dir_name", type=str, help="name of directory")
     parser.add_argument("path", type=str, help="path to save")
-    parser.add_argument("-r", "--reversed",
-                        action="store_true", dest="rev", default=False,
-                        help="reversed order")
+    #parser.add_argument("-r", "--reversed",
+    #                    action="store_true", dest="rev", default=False,
+    #                    help="reversed order")
 
     args = parser.parse_args()
 
     url_r = args.url
-    name = args.name
+    name = args.dir_name
     download_path = os.path.join(args.path, name)
-    rev = args.rev
+    #rev = args.rev
 
     if not os.path.exists(download_path):
         os.makedirs(download_path)
@@ -121,8 +119,7 @@ if __name__ == '__main__':
     print("Getting urls##########################################################")
     links = get_download_urls(url_r)
 
-    if  rev:
-        links = links[::-1]
+    #links = links[::-1]
 
     print("Start Download#######################################################")
     for i, _url in enumerate(links):
