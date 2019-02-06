@@ -8,7 +8,7 @@ Download a list or audiobook from www.ivoox.com easily
 
 ## Instructions
 
-`python ivoox.py url  path_to_save`
+`python ivoox.py url  dir_name path_to_save`
 
-- Files will be save in path_to_save/name_of_program.  
+- Files will be save in path_to_save/dir_name/name_of_program.  
 - The script supports url with multiple pages. 
